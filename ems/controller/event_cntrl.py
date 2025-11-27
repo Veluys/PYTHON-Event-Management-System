@@ -67,13 +67,15 @@ def _add_event():
 def _view_events():
     displayer.display_subheader("Viewing Events")
 
-    events = None
     try:
         events = event_dao.view_events()
     except Exception as err:
         print("Fetching event records failed!")
         displayer.show_error(err)
     else:
+        if len(events) == 0:
+            print("There are currently no participants!\n")
+            return
         displayer.displayTable("Events", _VIEW_COLUMN_HEADERS, events, _VIEW_COLUMN_SIZES)
 
 def _search_event():
