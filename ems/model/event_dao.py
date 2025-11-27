@@ -1,5 +1,3 @@
-from re import search
-
 import psycopg2
 
 import ems.model.dbconnection as dbconn
