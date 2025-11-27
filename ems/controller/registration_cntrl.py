@@ -39,6 +39,8 @@ def execute():
         match option:
             case 1:
                 _add_participant(_selected_event_id)
+            case 2:
+                _view_registered(_selected_event_id)
             case 5:
                 return
 
@@ -62,3 +64,18 @@ def _add_participant(event_id):
         displayer.show_error(err)
     else:
         print("New participant was added successfully!\n")
+
+def _view_registered(event_id):
+    displayer.display_subheader("Viewing Participants")
+
+    try:
+        participants = reg_dao.view_registered(event_id)
+    except Exception as err:
+        print("Fetching student records failed!")
+        displayer.show_error(err)
+    else:
+        if len(participants) == 0:
+            print("There are currently no participants!\n")
+            return
+        else:
+            displayer.displayTable("Registered Participants", _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
