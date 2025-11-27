@@ -16,12 +16,6 @@ class EventDAO:
             displayer.show_error(err)
             exit(1)
 
-    def _is_an_event(self, obj):
-        if not isinstance(obj, event_model.Event):
-            print("The passed parameter is not of event type!")
-            return False
-        return True
-
     def insert_event(self, event):
         if not self._is_an_event(event):
             return
@@ -39,51 +33,84 @@ class EventDAO:
             self.conn.rollback()
             raise e
 
-    def view_events(self):
-        view_query = EventDAO._get_base_view_query()
-        self.cur.execute(view_query)
-        return self.cur.fetchall()
-
-    def display_search(self, event_name):
-        search_query = EventDAO._get_base_view_query() + """
-            SELECT *
-            FROM events_cte
-            WHERE event_name ILIKE %s
-        """
-
-        self.cur.execute(search_query, (event_name, ))
-        return (self.cur.fetchone(), )
-
-    def record_search(self, event_name):
-        search_query = """
-            SELECT
-                event_name,
-                event_date,
-                start_time,
-                end_time,
-                venue_id
-            FROM events
-            WHERE event_name = %s
-        """
-
-        self.cur.execute(search_query, (event_name,))
-        return (self.cur.fetchone(),)
-
-    @staticmethod
-    def _get_base_view_query():
-        return """
+    def view_events(self, event_name=None):
+        view_query = """
             WITH events_cte AS (
                 SELECT
                     event_name,
-                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                    event_date,
+                    start_time,
+                    end_time,
                     venue_name
                 FROM events AS e
                 INNER JOIN venues AS v
                     ON e.venue_id = v.venue_id
                 ORDER BY event_date
             )
+            
+            SELECT
+                event_name,
+                TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                venue_name
+            FROM events_cte
         """
+
+        if event_name is not None:
+            view_query += """
+                WHERE event_name ILIKE %s
+            """
+            self.cur.execute(view_query, (event_name, ))
+            return (self.cur.fetchone(),)
+        else:
+            self.cur.execute(view_query)
+            return self.cur.fetchall()
+
+    def record_search(self, event_name):
+        search_query = """
+            SELECT
+                event_id,
+                event_name,
+                event_date,
+                start_time,
+                end_time,
+                venue_id
+            FROM events
+            WHERE event_name ILIKE %s
+        """
+
+        self.cur.execute(search_query, (event_name,))
+        return self.cur.fetchone()
+
+    def update_event(self, event_id, event):
+        if not self._is_an_event(event):
+            return
+
+        update_query = """
+            UPDATE events
+            SET
+                event_name = %s,
+                event_date = %s,
+                start_time = %s,
+                end_time = %s,
+                venue_id = %s
+            WHERE event_id = %s
+        """
+
+        update_value = [event.event_name, event.event_date, event.start_time, event.end_time, event.venue_id, event_id]
+
+        try:
+            self.cur.execute(update_query, update_value)
+            self.conn.commit()
+        except psycopg2.Error as e:
+            self.conn.rollback()
+            raise e
+
+    def _is_an_event(self, obj):
+        if not isinstance(obj, event_model.Event):
+            print("The passed parameter is not of event type!")
+            return False
+        return True
 
 event_dao = EventDAO()
