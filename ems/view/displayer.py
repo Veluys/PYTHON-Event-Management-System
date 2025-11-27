@@ -23,7 +23,7 @@ def display_menu(guide_msg, options):
 def show_error(error):
     print(f"Error: {type(error).__name__}, Message: {str(error)}\n")
 
-def displayTable(column_headers, records, column_sizes):
+def displayTable(table_name, column_headers, records, column_sizes):
     table_width = _DISPLAY_WIDTH - len(column_headers)
 
     column_widths = [int(table_width * size) for size in column_sizes[:-1]]
@@ -36,6 +36,7 @@ def displayTable(column_headers, records, column_sizes):
             print(centered + "|", end="")
         print("\n" + "-" * _DISPLAY_WIDTH)
 
+    display_subheader(table_name)
     print_row(column_headers, column_widths)
     for record in records:
         print_row(record, column_widths)
