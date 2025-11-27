@@ -26,6 +26,8 @@ def execute():
                 _search_event()
             case 4:
                 _update_event()
+            case 5:
+                _delete_event()
             case 6:
                 return
 
@@ -96,15 +98,14 @@ def _update_event():
     old_event_name = get_input.getLine("Event name: ")
 
     matched_event = None
-
     try:
         matched_event = event_dao.record_search(old_event_name)
     except Exception as err:
         print("Searching event records failed!")
         displayer.show_error(err)
     else:
-        if matched_event[0] is None:
-            print(f"There are no records that matched the event name '{old_event_name}'")
+        if matched_event is None:
+            print(f"There are no records that matched the event name '{old_event_name}' \n")
             return
 
     print()
@@ -154,3 +155,25 @@ def _update_event():
     else:
         print("Event was updated successfully")
 
+def _delete_event():
+    displayer.display_subheader("Search Event")
+    event_name = get_input.getLine("Event name: ")
+    print()
+
+    try:
+        matched_event = event_dao.record_search(event_name)
+    except Exception as err:
+        print("Searching event records failed!")
+        displayer.show_error(err)
+    else:
+        if matched_event is None:
+            print(f"There are no records that matched the event name '{event_name}' \n")
+            return
+
+    try:
+        event_dao.delete_event(event_name)
+    except Exception as err:
+        print("Deleting the event record failed!")
+        displayer.show_error(err)
+    else:
+        print("Event was deleted successfully")
