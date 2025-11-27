@@ -22,6 +22,8 @@ def execute():
                 _add_event()
             case 2:
                 _view_events()
+            case 3:
+                _search_event()
             case 6:
                 return
 
@@ -69,4 +71,21 @@ def _view_events():
         displayer.show_error(err)
     else:
         displayer.displayTable(_VIEW_COLUMN_HEADERS, events, _VIEW_COLUMN_SIZES)
+
+def _search_event():
+    displayer.display_subheader("Search Event")
+    event_name = get_input.getLine("Event name: ")
+    print()
+
+    event = None
+    try:
+        event = event_dao.display_search(event_name)
+    except Exception as err:
+        print("Searching event records failed!")
+        displayer.show_error(err)
+    else:
+        if event[0] is None:
+            print(f"There are no records that matched the event name '{event_name}'\n")
+            return
+        displayer.displayTable("Matched Event", _VIEW_COLUMN_HEADERS, event, _VIEW_COLUMN_SIZES)
 
