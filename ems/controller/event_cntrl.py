@@ -4,6 +4,9 @@ from ems.model.event_dao import event_dao
 from ems.model.venue_dao import venue_dao
 import ems.model.event as event_model
 
+_VIEW_COLUMN_HEADERS = ["Event Name", "Date", "Start Time", "End Time", "Venue"]
+_VIEW_COLUMN_SIZES = [0.30, 0.20, 0.15, 0.15, 0.20]
+
 def execute():
     while True:
         displayer.display_header("Events Page")
@@ -17,11 +20,13 @@ def execute():
         match option:
             case 1:
                 _add_event()
+            case 2:
+                _view_events()
             case 6:
                 return
 
 def _add_event():
-    displayer.display_header("Adding Event")
+    displayer.display_subheader("Adding Event")
 
     venues = None
     try:
@@ -52,3 +57,16 @@ def _add_event():
         displayer.show_error(err)
     else:
         print("New event was added successfully")
+
+def _view_events():
+    displayer.display_subheader("Viewing Events")
+
+    events = None
+    try:
+        events = event_dao.view_events()
+    except Exception as err:
+        print("Fetching event records failed!")
+        displayer.show_error(err)
+    else:
+        displayer.displayTable(_VIEW_COLUMN_HEADERS, events, _VIEW_COLUMN_SIZES)
+
