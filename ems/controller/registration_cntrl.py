@@ -41,6 +41,8 @@ def execute():
                 _add_participant(_selected_event_id)
             case 2:
                 _view_registered(_selected_event_id)
+            case 3:
+                _search_registered(_selected_event_id)
             case 5:
                 return
 
@@ -79,3 +81,20 @@ def _view_registered(event_id):
             return
         else:
             displayer.displayTable("Registered Participants", _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
+
+def _search_registered(event_id):
+    displayer.display_subheader("Searching Participants")
+    sr_code = getLine("Student Sr Code: ")
+    print()
+
+    try:
+        participants = reg_dao.view_registered(event_id, sr_code)
+    except Exception as err:
+        print("Fetching student records failed!")
+        displayer.show_error(err)
+    else:
+        if participants[0] is None:
+            print(f"There are no participants with an Sr-Code '{sr_code}'\n")
+            return
+        else:
+            displayer.displayTable("Matched Participant", _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
