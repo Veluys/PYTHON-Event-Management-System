@@ -1,3 +1,5 @@
+from re import search
+
 import psycopg2
 
 import ems.model.dbconnection as dbconn
@@ -38,44 +40,45 @@ class EventDAO:
             raise e
 
     def view_events(self):
-        view_query = EventDAO._get_base_view_query() + """
-            SELECT
-                event_name,
-                TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
-                venue_name
-            FROM events_cte
-        """
-
+        view_query = EventDAO._get_base_view_query()
         self.cur.execute(view_query)
         return self.cur.fetchall()
 
-    def search_event(self, event_name):
+    def display_search(self, event_name):
         search_query = EventDAO._get_base_view_query() + """
-            SELECT
-                event_name,
-                TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
-                LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
-                LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
-                venue_name
+            SELECT *
             FROM events_cte
-            WHERE event_name ILIKE ?
+            WHERE event_name ILIKE %s
         """
 
-        self.cur.execute(search_query)
-        return self.cur.fetchall()
+        self.cur.execute(search_query, (event_name, ))
+        return (self.cur.fetchone(), )
+
+    def record_search(self, event_name):
+        search_query = """
+            SELECT
+                event_name,
+                event_date,
+                start_time,
+                end_time,
+                venue_id
+            FROM events
+            WHERE event_name = %s
+        """
+
+        self.cur.execute(search_query, (event_name,))
+        return (self.cur.fetchone(),)
 
     @staticmethod
     def _get_base_view_query():
         return """
             WITH events_cte AS (
                 SELECT
-                    e.event_name,
-                    event_date,
-                    start_time,
-                    end_time,
-                    v.venue_name
+                    event_name,
+                    TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                    LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                    LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                    venue_name
                 FROM events AS e
                 INNER JOIN venues AS v
                     ON e.venue_id = v.venue_id
