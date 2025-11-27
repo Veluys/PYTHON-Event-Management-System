@@ -31,4 +31,15 @@ class VenueDAO:
         self.cur.execute(select_query)
         return [row[0] for row in self.cur.fetchall()]
 
+    def getVenueID(self, venue_name):
+        select_query = """
+            SELECT venue_id
+            FROM venues
+            WHERE venue_name ILIKE %s;
+            ORDER BY venue_name
+        """
+
+        self.cur.execute(select_query, venue_name)
+        return self.cur.fetchone()[0]
+
 venue_dao = VenueDAO()
