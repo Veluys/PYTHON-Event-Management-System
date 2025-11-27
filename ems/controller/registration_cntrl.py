@@ -43,6 +43,8 @@ def execute():
                 _view_registered(_selected_event_id)
             case 3:
                 _search_registered(_selected_event_id)
+            case 4:
+                _remove_participant(_selected_event_id)
             case 5:
                 return
 
@@ -98,3 +100,26 @@ def _search_registered(event_id):
             return
         else:
             displayer.displayTable("Matched Participant", _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
+
+def _remove_participant(event_id):
+    displayer.display_subheader("Remove Participant")
+    sr_code = getLine("Student Sr Code: ")
+    print()
+
+    try:
+        matched_participant = reg_dao.view_registered(event_id, sr_code)
+    except Exception as err:
+        print("Searching student records failed!")
+        displayer.show_error(err)
+    else:
+        if matched_participant[0] is None:
+            print(f"There are no participants with an Sr-Code '{sr_code}' \n")
+            return
+
+    try:
+        reg_dao.remove_participant(event_id, sr_code)
+    except Exception as err:
+        print("Removing the participant failed!")
+        displayer.show_error(err)
+    else:
+        print("Participant was removed successfully")
