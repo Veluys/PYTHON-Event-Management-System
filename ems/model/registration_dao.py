@@ -28,5 +28,30 @@ class RegDao:
             self.conn.rollback()
             raise e
 
+    def view_registered(self, event_id, sr_code=None):
+        view_query = """
+                SELECT
+                	s.sr_code,
+                	pshortname,
+                	year_level,
+                	CONCAT(last_name, ', ', first_name, ' ', middle_name) AS full_name
+                FROM students AS s
+                INNER JOIN registration AS r
+                    ON event_id = %s
+                    AND s.sr_code = r.sr_code
+                INNER JOIN programs AS p
+                	ON s.program_id = p.program_id
+                ORDER BY year_level, pshortname, full_name
+            """
+
+        if sr_code is not None:
+            view_query += """
+                WHERE sr_code ILIKE %s
+            """
+            self.cur.execute(view_query, (event_id, sr_code))
+            return (self.cur.fetchone(),)
+        else:
+            self.cur.execute(view_query, (event_id,))
+            return self.cur.fetchall()
 
 reg_dao = RegDao()
