@@ -30,7 +30,7 @@ def getLine(prompt, allow_blank=False):
 
 def getDate(prompt, allow_blank=False):
     while True:
-        user_input = input(prompt)
+        user_input = input(prompt + " (Ex. January 1, 2001 or Jan 1, 2001): ")
 
         if allow_blank and not user_input.strip():
             return None
@@ -43,9 +43,15 @@ def getDate(prompt, allow_blank=False):
             except ValueError:
                 continue
 
+        try:
+            raise ValueError("Invalid date format!")
+        except ValueError as err:
+            displayer.show_error(err)
+
+
 def getTime(prompt, allow_blank=False):
     while True:
-        user_input = input(prompt)
+        user_input = input(prompt + " (Ex. 7:00 am or 7 am): ")
 
         if allow_blank and not user_input.strip():
             return None
@@ -57,3 +63,8 @@ def getTime(prompt, allow_blank=False):
                 return datetime.strptime(user_input, dateFormat)
             except ValueError:
                 continue
+
+        try:
+            raise ValueError("Invalid time format!")
+        except ValueError as err:
+            displayer.show_error(err)
