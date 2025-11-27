@@ -14,3 +14,8 @@ def display_header(header):
 
 def display_subheader(header):
     _display_header(header, '+', '+', '-', '|', '+', '+')
+
+def show_menu(guide_msg, options):
+    print(guide_msg)
+    for i, option in enumerate(options, start=1):
+        print(f"\t[{i}] {option}")
