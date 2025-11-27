@@ -19,3 +19,6 @@ def show_menu(guide_msg, options):
     print(guide_msg)
     for i, option in enumerate(options, start=1):
         print(f"\t[{i}] {option}")
+
+def show_error(error):
+    print(f"Error: {type(error).__name__}, Message: {str(error)}")
