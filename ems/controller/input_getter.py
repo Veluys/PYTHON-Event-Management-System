@@ -16,3 +16,13 @@ def getInt(highest, allow_blank=False):
         else:
             print()
             return num_input
+
+def getLine(prompt, allow_blank=False):
+    while True:
+        user_input = input(prompt)
+
+        if user_input.strip():
+            return user_input
+        else:
+            if allow_blank:
+                return None
