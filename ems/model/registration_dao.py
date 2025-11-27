@@ -41,16 +41,18 @@ class RegDao:
                     AND s.sr_code = r.sr_code
                 INNER JOIN programs AS p
                 	ON s.program_id = p.program_id
-                ORDER BY year_level, pshortname, full_name
             """
 
         if sr_code is not None:
             view_query += """
-                WHERE sr_code ILIKE %s
+                WHERE s.sr_code ILIKE %s;
             """
             self.cur.execute(view_query, (event_id, sr_code))
             return (self.cur.fetchone(),)
         else:
+            view_query += """
+                ORDER BY year_level, pshortname, full_name;
+            """
             self.cur.execute(view_query, (event_id,))
             return self.cur.fetchall()
 
