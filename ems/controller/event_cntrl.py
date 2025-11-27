@@ -24,6 +24,8 @@ def execute():
                 _view_events()
             case 3:
                 _search_event()
+            case 4:
+                _update_event()
             case 6:
                 return
 
@@ -70,7 +72,7 @@ def _view_events():
         print("Fetching event records failed!")
         displayer.show_error(err)
     else:
-        displayer.displayTable(_VIEW_COLUMN_HEADERS, events, _VIEW_COLUMN_SIZES)
+        displayer.displayTable("Events", _VIEW_COLUMN_HEADERS, events, _VIEW_COLUMN_SIZES)
 
 def _search_event():
     displayer.display_subheader("Search Event")
@@ -79,7 +81,7 @@ def _search_event():
 
     event = None
     try:
-        event = event_dao.display_search(event_name)
+        event = event_dao.view_events(event_name)
     except Exception as err:
         print("Searching event records failed!")
         displayer.show_error(err)
@@ -88,4 +90,67 @@ def _search_event():
             print(f"There are no records that matched the event name '{event_name}'\n")
             return
         displayer.displayTable("Matched Event", _VIEW_COLUMN_HEADERS, event, _VIEW_COLUMN_SIZES)
+
+def _update_event():
+    displayer.display_subheader("Updating Event")
+    old_event_name = get_input.getLine("Event name: ")
+
+    matched_event = None
+
+    try:
+        matched_event = event_dao.record_search(old_event_name)
+    except Exception as err:
+        print("Searching event records failed!")
+        displayer.show_error(err)
+    else:
+        if matched_event[0] is None:
+            print(f"There are no records that matched the event name '{old_event_name}'")
+            return
+
+    print()
+
+    venues = None
+    try:
+        venues = venue_dao.getVenueNames()
+    except Exception as err:
+        print("Fetching venue names failed!")
+        displayer.show_error(err)
+        return
+
+    event = event_model.Event()
+    print("Note: Only provide values to the field(s) you want to update. Otherwise simply press enter.")
+
+    event_name = get_input.getLine("Event name: ", True)
+    event.set_event_name(event_name if event_name is not None else matched_event[1])
+
+    event_date = get_input.getDate("Event Date", True)
+    event.set_event_date(event_date if event_date is not None else matched_event[2])
+
+    start_time = get_input.getTime("Start Time", True)
+    event.set_start_time(start_time if start_time is not None else matched_event[3])
+
+    end_time = get_input.getTime("End Time", True)
+    event.set_end_time(end_time if end_time is not None else matched_event[4])
+
+    displayer.display_menu("Venues: ", venues)
+    venue_option = get_input.getInt(len(venues), True)
+
+    if venue_option != -1:
+        venue_option -= 1
+        try:
+            venue_name = venues[venue_option]
+            event.set_venue_id(venue_dao.getVenueID(venue_name))
+        except Exception as err:
+            print("Matching venue id for the selected venue name failed")
+            displayer.show_error(err)
+    else:
+        event.set_venue_id(matched_event[5])
+
+    try:
+        event_dao.update_event(matched_event[0], event)
+    except Exception as err:
+        print(f"Updating the event record of {old_event_name} failed!")
+        displayer.show_error(err)
+    else:
+        print("Event was updated successfully")
 
