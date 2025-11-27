@@ -1,4 +1,5 @@
 import ems.view.displayer as displayer
+from datetime import datetime
 
 def getInt(highest, allow_blank=False):
     while True:
@@ -26,3 +27,18 @@ def getLine(prompt, allow_blank=False):
         else:
             if allow_blank:
                 return None
+
+def getDate(prompt, allow_blank=False):
+    while True:
+        user_input = input(prompt)
+
+        if allow_blank and not user_input.strip():
+            return None
+
+        validDateFormats = ("%B %d, %Y", "%b %d, %Y")
+
+        for dateFormat in validDateFormats:
+            try:
+                return datetime.strptime(user_input, dateFormat)
+            except ValueError:
+                continue
