@@ -36,3 +36,5 @@ class EventDAO:
         except psycopg2.Error as e:
             self.conn.rollback()
             raise e
+
+event_dao = EventDAO()
