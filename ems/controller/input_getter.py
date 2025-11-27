@@ -42,3 +42,18 @@ def getDate(prompt, allow_blank=False):
                 return datetime.strptime(user_input, dateFormat)
             except ValueError:
                 continue
+
+def getTime(prompt, allow_blank=False):
+    while True:
+        user_input = input(prompt)
+
+        if allow_blank and not user_input.strip():
+            return None
+
+        validDateFormats = ("%I:%M %p", "%I %p")
+
+        for dateFormat in validDateFormats:
+            try:
+                return datetime.strptime(user_input, dateFormat)
+            except ValueError:
+                continue
