@@ -35,11 +35,11 @@ class VenueDAO:
         select_query = """
             SELECT venue_id
             FROM venues
-            WHERE venue_name ILIKE %s;
+            WHERE venue_name ILIKE %s
             ORDER BY venue_name
         """
 
-        self.cur.execute(select_query, venue_name)
+        self.cur.execute(select_query, (venue_name,))
         return self.cur.fetchone()[0]
 
 venue_dao = VenueDAO()
