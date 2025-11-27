@@ -37,4 +37,35 @@ class EventDAO:
             self.conn.rollback()
             raise e
 
+    def view_events(self):
+        view_query = EventDAO._get_base_view_query() + """
+            SELECT
+                event_name,
+                TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                venue_name
+            FROM events_cte
+        """
+
+        self.cur.execute(view_query)
+        return self.cur.fetchall()
+
+    @staticmethod
+    def _get_base_view_query():
+        return """
+            WITH events_cte AS (
+                SELECT
+                    e.event_name,
+                    event_date,
+                    start_time,
+                    end_time,
+                    v.venue_name
+                FROM events AS e
+                INNER JOIN venues AS v
+                    ON e.venue_id = v.venue_id
+                ORDER BY event_date
+            )
+        """
+
 event_dao = EventDAO()
