@@ -107,6 +107,19 @@ class EventDAO:
             self.conn.rollback()
             raise e
 
+    def delete_event(self, event_name):
+        delete_query = """
+            DELETE FROM events
+            WHERE event_name = %s
+        """
+
+        try:
+            self.cur.execute(delete_query, (event_name,))
+            self.conn.commit()
+        except psycopg2.Error as e:
+            self.conn.rollback()
+            raise e
+
     def _is_an_event(self, obj):
         if not isinstance(obj, event_model.Event):
             print("The passed parameter is not of event type!")
