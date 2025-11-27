@@ -47,6 +47,14 @@ def _add_event():
     event.set_event_date(get_input.getDate("Event Date"))
     event.set_start_time(get_input.getTime("Start Time"))
     event.set_end_time(get_input.getTime("End Time"))
+
+    try:
+        if event.get_end_time() < event.get_start_time():
+            raise ValueError("Error! End Time is before Start Time!")
+    except ValueError as err:
+        displayer.show_error(err)
+        return
+
     displayer.display_menu("Venues: ", venues)
     venue_option = get_input.getInt(len(venues)) - 1
     try:
@@ -74,7 +82,7 @@ def _view_events():
         displayer.show_error(err)
     else:
         if len(events) == 0:
-            print("There are currently no participants!\n")
+            print("There are currently no events!\n")
             return
         displayer.displayTable("Events", _VIEW_COLUMN_HEADERS, events, _VIEW_COLUMN_SIZES)
 
