@@ -56,4 +56,18 @@ class RegDao:
             self.cur.execute(view_query, (event_id,))
             return self.cur.fetchall()
 
+    def remove_participant(self, event_id, sr_code):
+        delete_query = """
+            DELETE FROM registration
+            WHERE event_id = %s
+                AND sr_code = %s
+        """
+
+        try:
+            self.cur.execute(delete_query, (event_id, sr_code))
+            self.conn.commit()
+        except psycopg2.Error as e:
+            self.conn.rollback()
+            raise e
+
 reg_dao = RegDao()
