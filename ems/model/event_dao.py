@@ -51,6 +51,21 @@ class EventDAO:
         self.cur.execute(view_query)
         return self.cur.fetchall()
 
+    def search_event(self, event_name):
+        search_query = EventDAO._get_base_view_query() + """
+            SELECT
+                event_name,
+                TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
+                LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
+                LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
+                venue_name
+            FROM events_cte
+            WHERE event_name ILIKE ?
+        """
+
+        self.cur.execute(search_query)
+        return self.cur.fetchall()
+
     @staticmethod
     def _get_base_view_query():
         return """
