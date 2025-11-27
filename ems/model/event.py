@@ -1,10 +1,14 @@
 class Event:
-    def __init__(self, event_name, event_date, start_time, end_time, venue_id):
-        self.event_name = event_name
-        self.event_date = event_date
-        self.start_time = start_time
-        self.end_time = end_time
-        self.venue_id = venue_id
+    def __init__(self):
+        self.event_id = None
+        self.event_name = None
+        self.event_date = None
+        self.start_time = None
+        self.end_time = None
+        self.venue_id = None
+
+    def set_event_id(self, event_id):
+        self.event_id = event_id
 
     def set_event_name(self, event_name):
         self.event_name = event_name
@@ -20,6 +24,9 @@ class Event:
 
     def set_venue_id(self, venue_id):
         self.venue_id = venue_id
+
+    def get_event_id(self):
+        return self.event_id
 
     def get_event_name(self):
         return self.event_name
