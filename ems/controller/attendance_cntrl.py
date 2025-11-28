@@ -7,7 +7,7 @@ from ems.model.student_dao import stud_dao
 from ems.model.attendance_dao import att_dao
 
 _VIEW_COLUMN_HEADERS = ("Sr-Code", "Program", "Year Level", "Full Name", "Attended")
-_VIEW_COLUMN_SIZES = (0.10, 0.20, 0.10, 0.50, 0.10)
+_VIEW_COLUMN_SIZES = (0.15, 0.15, 0.10, 0.50, 0.10)
 
 def execute():
     displayer.display_header("Attendance Page")
@@ -42,6 +42,8 @@ def execute():
                 _view_attendance(_selected_event_id, attended=True)
             case 2:
                 _view_attendance(_selected_event_id, attended=False)
+            case 3:
+                _search_registered(_selected_event_id)
             case 6:
                 return
 
@@ -60,3 +62,20 @@ def _view_attendance(event_id, attended):
             return
         else:
             displayer.displayTable(participant_status, _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
+
+def _search_registered(event_id):
+    displayer.display_subheader("Searching Participants")
+    sr_code = getLine("Student Sr Code: ")
+    print()
+
+    try:
+        participants = att_dao.search_attendance(event_id, sr_code)
+    except Exception as err:
+        print("Fetching student or/and registration records failed!")
+        displayer.show_error(err)
+    else:
+        if participants[0] is None:
+            print(f"There are no participants with an Sr-Code '{sr_code}'\n")
+            return
+        else:
+            displayer.displayTable("Matched Participant", _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
