@@ -49,4 +49,10 @@ class AttendDao:
         participants = self.cur.fetchall()
         return participants
 
+    def search_attendance(self, event_id, sr_code):
+        view_query = self._get_base_view_query() + " AND s.sr_code ILIKE %s;"
+
+        self.cur.execute(view_query, (event_id, sr_code))
+        return (self.cur.fetchone(),)
+
 att_dao = AttendDao()
