@@ -37,16 +37,17 @@ def getDate(prompt, allow_blank=False):
 
         validDateFormats = ("%B %d, %Y", "%b %d, %Y")
 
+        error = None
         for dateFormat in validDateFormats:
             try:
-                return datetime.strptime(user_input, dateFormat)
-            except ValueError:
+                date = datetime.strptime(user_input, dateFormat)
+                if date > datetime.today(): return date
+                else: error = ValueError("Date must be at least 1 day from now.")
+            except ValueError as err:
+                error = err
                 continue
 
-        try:
-            raise ValueError("Invalid date format!")
-        except ValueError as err:
-            displayer.show_error(err)
+        displayer.show_error(error)
 
 
 def getTime(prompt, allow_blank=False):
