@@ -31,6 +31,20 @@ class EventDAO:
             self.conn.rollback()
             raise e
 
+    def view_overlapped_events(self, event_id, event):
+        view_query = self._get_base_view_query() + """
+            WHERE e.event_id != %s
+                AND e.venue_id = %s
+                AND e.event_date = %s
+                AND %s::time BETWEEN e.start_time AND e.end_time
+        """
+
+        params = [event_id, event.venue_id, event.event_date, event.start_time]
+
+        self.cur.execute(view_query, params)
+        result = self.cur.fetchall()
+        return result
+
     def view_events(self):
         view_query = self._get_base_view_query() + "\nORDER BY e.event_date;"
         self.cur.execute(view_query)
