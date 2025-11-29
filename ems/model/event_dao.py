@@ -31,39 +31,28 @@ class EventDAO:
             self.conn.rollback()
             raise e
 
-    def view_events(self, event_name=None):
-        view_query = """
-            WITH events_cte AS (
-                SELECT
-                    event_name,
-                    event_date,
-                    start_time,
-                    end_time,
-                    venue_name
-                FROM events AS e
-                INNER JOIN venues AS v
-                    ON e.venue_id = v.venue_id
-                ORDER BY event_date
-            )
-            
+    def view_events(self):
+        view_query = self._get_base_view_query() + "\nORDER BY e.event_date;"
+        self.cur.execute(view_query)
+        return self.cur.fetchall()
+
+    def display_search(self, event_name):
+        view_query = self._get_base_view_query() + "\nWHERE event_name ILIKE %s"
+        self.cur.execute(view_query, (event_name,))
+        return self.cur.fetchone()
+
+    def _get_base_view_query(self):
+        return """
             SELECT
                 event_name,
                 TO_CHAR(event_date, 'Mon DD, YYYY') AS event_date,
                 LOWER(TO_CHAR(start_time, 'FMHH12:MI AM')) AS start_time,
                 LOWER(TO_CHAR(end_time, 'FMHH12:MI AM')) AS end_time,
                 venue_name
-            FROM events_cte
+            FROM events e
+            INNER JOIN venues v 
+                ON e.venue_id = v.venue_id
         """
-
-        if event_name is not None:
-            view_query += """
-                WHERE event_name ILIKE %s
-            """
-            self.cur.execute(view_query, (event_name, ))
-            return (self.cur.fetchone(),)
-        else:
-            self.cur.execute(view_query)
-            return self.cur.fetchall()
 
     def record_search(self, event_name):
         search_query = """

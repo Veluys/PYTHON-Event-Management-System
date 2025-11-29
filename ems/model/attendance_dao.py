@@ -1,7 +1,6 @@
 import psycopg2
 
 import ems.model.dbconnection as dbconn
-import ems.model.student as student_model
 import ems.view.displayer as displayer
 
 class AttendDao:
@@ -54,5 +53,33 @@ class AttendDao:
 
         self.cur.execute(view_query, (event_id, sr_code))
         return (self.cur.fetchone(),)
+
+    def is_attendee(self, event_id, sr_code):
+        check_query = """
+            SELECT attended
+            FROM registration
+            WHERE event_id = %s
+                AND sr_code = %s
+        """
+
+        self.cur.execute(check_query, (event_id, sr_code))
+        result = self.cur.fetchone()
+        return None if result is None else result[0]
+
+    def update_attendance(self, event_id, sr_code, setPresent):
+        update_query = """
+            UPDATE registration
+            SET
+                attended = %s
+            WHERE event_id = %s
+                AND sr_code = %s
+        """
+
+        try:
+            self.cur.execute(update_query, (setPresent, event_id, sr_code))
+            self.conn.commit()
+        except psycopg2.Error as e:
+            self.conn.rollback()
+            raise e
 
 att_dao = AttendDao()
