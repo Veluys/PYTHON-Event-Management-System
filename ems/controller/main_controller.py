@@ -9,6 +9,7 @@ def execute():
 
     while True:
         displayer.display_header("Start Page")
+        event_cntrl.show_upcoming()
 
         displayer.display_subheader("Main Menu")
         main_menu_options = ("Events", "Registration", "Attendance", "Exit")
