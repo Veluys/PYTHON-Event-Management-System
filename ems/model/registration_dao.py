@@ -80,4 +80,14 @@ class RegDao:
             self.conn.rollback()
             raise e
 
+    def emptyCheck(self, event_id):
+        select_query = """
+                    SELECT COUNT(*)
+                    FROM registration
+                    WHERE event_id = %s
+                """
+
+        self.cur.execute(select_query, (event_id,))
+        return self.cur.fetchone()[0] == 0
+
 reg_dao = RegDao()

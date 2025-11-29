@@ -42,4 +42,13 @@ class VenueDAO:
         self.cur.execute(select_query, (venue_name,))
         return self.cur.fetchone()[0]
 
+    def emptyCheck(self):
+        select_query = """
+                    SELECT COUNT(*)
+                    FROM venues
+                """
+
+        self.cur.execute(select_query)
+        return self.cur.fetchone()[0] == 0
+
 venue_dao = VenueDAO()

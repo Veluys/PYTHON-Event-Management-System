@@ -135,4 +135,13 @@ class EventDAO:
             return False
         return True
 
+    def emptyCheck(self):
+        select_query = """
+                    SELECT COUNT(*)
+                    FROM events
+                """
+
+        self.cur.execute(select_query)
+        return self.cur.fetchone()[0] == 0
+
 event_dao = EventDAO()

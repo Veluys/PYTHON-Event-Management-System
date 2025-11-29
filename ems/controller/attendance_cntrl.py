@@ -3,12 +3,18 @@ import ems.controller.input_getter as get_input
 from ems.controller.input_getter import getLine
 from ems.model.event_dao import event_dao
 from ems.model.attendance_dao import att_dao
+from ems.model.registration_dao import reg_dao
 
 _VIEW_COLUMN_HEADERS = ("Sr-Code", "Program", "Year Level", "Full Name", "Attended")
 _VIEW_COLUMN_SIZES = (0.15, 0.15, 0.10, 0.50, 0.10)
 
 def execute():
     displayer.display_header("Attendance Page")
+
+    if event_dao.emptyCheck():
+        print("There are currently no events!\n")
+        return
+
     event_name = getLine("Event Name: ")
     print()
 
@@ -23,7 +29,11 @@ def execute():
         displayer.show_error(err)
         return
     else:
-        _selected_event_id = matched_event[0]
+        if reg_dao.emptyCheck():
+            print("There are currently no participants!\n")
+            return
+        else:
+            _selected_event_id = matched_event[0]
 
     while True:
         displayer.display_header("Attendance Page")

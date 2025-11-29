@@ -11,11 +11,19 @@ def execute():
     while True:
         displayer.display_header("Events Page")
 
+        if venue_dao.emptyCheck():
+            print("There are currently no venues!\n")
+            return
+
         displayer.display_subheader("Event Menu")
         event_operations = ("Add Events", "View Events", "Search Events", "Update Events", "Delete Events", "Exit")
 
         displayer.display_menu("Select an operation: ", event_operations)
         option = get_input.getInt(len(event_operations))
+
+        if option >= 2 and option != 6 and event_dao.emptyCheck():
+            print("There are currently no events!\n")
+            return
 
         match option:
             case 1:
@@ -39,7 +47,7 @@ def show_upcoming():
         displayer.show_error(err)
         return
     else:
-        if upcoming_events[0]:
+        if upcoming_events:
             displayer.displayTable("Upcoming Events",
                                    _VIEW_COLUMN_HEADERS, upcoming_events, _VIEW_COLUMN_SIZES)
 

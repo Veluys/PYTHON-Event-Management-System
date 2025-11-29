@@ -10,10 +10,14 @@ _VIEW_COLUMN_SIZES = (0.15, 0.20, 0.15, 0.50)
 
 def execute():
     displayer.display_header("Registration Page")
+
+    if event_dao.emptyCheck():
+        print("There are currently no events!\n")
+        return
+
     event_name = getLine("Event Name: ")
     print()
 
-    matched_event = None
     _selected_event_id = None
     try:
         matched_event = event_dao.record_search(event_name)
@@ -35,6 +39,10 @@ def execute():
 
         displayer.display_menu("Select an operation: ", reg_operations)
         option = get_input.getInt(len(reg_operations))
+
+        if option >= 2 and option != 5 and reg_dao.emptyCheck():
+            print("There are currently no participants!\n")
+            return
 
         match option:
             case 1:
