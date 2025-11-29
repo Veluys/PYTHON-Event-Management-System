@@ -48,6 +48,8 @@ def execute():
             case 5:
                 return
 
+        print()
+
 def _add_participant(event_id):
     displayer.display_subheader("Adding Participant")
 
@@ -55,10 +57,18 @@ def _add_participant(event_id):
 
     try:
         if not stud_dao.student_exists(sr_code):
-            print(f"There are no students that matched the given Sr-Code {sr_code}\n")
+            print(f"There are no students that matched the given Sr-Code {sr_code}")
             return
     except Exception as err:
         print("Searching student records failed!")
+        displayer.show_error(err)
+
+    try:
+        if reg_dao.is_registered(sr_code):
+            print(f"Student with Sr-Code {sr_code} is already registered!")
+            return
+    except Exception as err:
+        print("Searching registration records failed!")
         displayer.show_error(err)
 
     try:
@@ -67,7 +77,7 @@ def _add_participant(event_id):
         print("Searching student records failed!")
         displayer.show_error(err)
     else:
-        print("New participant was added successfully!\n")
+        print("New participant was added successfully!")
 
 def _view_registered(event_id):
     displayer.display_subheader("Viewing Participants")
@@ -79,7 +89,7 @@ def _view_registered(event_id):
         displayer.show_error(err)
     else:
         if len(participants) == 0:
-            print("There are currently no participants!\n")
+            print("There are currently no participants!")
             return
         else:
             displayer.displayTable("Registered Participants", _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
@@ -96,7 +106,7 @@ def _search_registered(event_id):
         displayer.show_error(err)
     else:
         if participants[0] is None:
-            print(f"There are no participants with an Sr-Code '{sr_code}'\n")
+            print(f"There are no participants with an Sr-Code '{sr_code}'")
             return
         else:
             displayer.displayTable("Matched Participant", _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
@@ -113,7 +123,7 @@ def _remove_participant(event_id):
         displayer.show_error(err)
     else:
         if matched_participant[0] is None:
-            print(f"There are no participants with an Sr-Code '{sr_code}' \n")
+            print(f"There are no participants with an Sr-Code '{sr_code}'")
             return
 
     try:
