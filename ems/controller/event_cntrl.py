@@ -31,6 +31,18 @@ def execute():
             case 6:
                 return
 
+def show_upcoming():
+    try:
+        upcoming_events = event_dao.view_upcoming()
+    except Exception as err:
+        print("Fetching upcoming events failed!")
+        displayer.show_error(err)
+        return
+    else:
+        if upcoming_events[0]:
+            displayer.displayTable("Upcoming Events",
+                                   _VIEW_COLUMN_HEADERS, upcoming_events, _VIEW_COLUMN_SIZES)
+
 def _add_event():
     displayer.display_subheader("Adding Event")
 
