@@ -79,6 +79,18 @@ def _add_event():
         displayer.show_error(err)
 
     try:
+        overlapped_events = event_dao.view_overlapped_events(-1, event)
+    except Exception as err:
+        print("Checking for overlapped events failed!")
+        displayer.show_error(err)
+    else:
+        if overlapped_events:
+            print("The event can't be added to the database!")
+            displayer.displayTable("Overlapped Events",
+                                   _VIEW_COLUMN_HEADERS, overlapped_events, _VIEW_COLUMN_SIZES)
+            return
+
+    try:
         event_dao.insert_event(event)
     except Exception as err:
         print("Adding new event failed!")
@@ -133,7 +145,6 @@ def _update_event():
 
     print()
 
-    venues = None
     try:
         venues = venue_dao.getVenueNames()
     except Exception as err:
@@ -141,7 +152,7 @@ def _update_event():
         displayer.show_error(err)
         return
 
-    event = event_model.Event()
+    updated_event = event_model.Event()
     print("Note: Only provide values to the field(s) you want to update. Otherwise simply press enter.")
 
     new_event_name = get_input.getLine("Event name: ", True)
@@ -158,18 +169,18 @@ def _update_event():
                 print(f"An event with an event name of '{new_event_name}' already exists in the database!\n")
                 return
             else:
-                event.set_event_name(new_event_name)
+                updated_event.set_event_name(new_event_name)
     else:
-        event.set_event_name(matched_event[1])
+        updated_event.set_event_name(matched_event[1])
 
     event_date = get_input.getDate("Event Date", True)
-    event.set_event_date(event_date if event_date else matched_event[2])
+    updated_event.set_event_date(event_date if event_date else matched_event[2])
 
     start_time = get_input.getTime("Start Time", True)
-    event.set_start_time(start_time if start_time else matched_event[3])
+    updated_event.set_start_time(start_time if start_time else matched_event[3])
 
     end_time = get_input.getTime("End Time", True)
-    event.set_end_time(end_time if end_time else matched_event[4])
+    updated_event.set_end_time(end_time if end_time else matched_event[4])
 
     displayer.display_menu("Venues: ", venues)
     venue_option = get_input.getInt(len(venues), True)
@@ -178,15 +189,27 @@ def _update_event():
         venue_option -= 1
         try:
             venue_name = venues[venue_option]
-            event.set_venue_id(venue_dao.getVenueID(venue_name))
+            updated_event.set_venue_id(venue_dao.getVenueID(venue_name))
         except Exception as err:
             print("Matching venue id for the selected venue name failed")
             displayer.show_error(err)
     else:
-        event.set_venue_id(matched_event[5])
+        updated_event.set_venue_id(matched_event[5])
 
     try:
-        event_dao.update_event(matched_event[0], event)
+        overlapped_events = event_dao.view_overlapped_events(matched_event[0], updated_event)
+    except Exception as err:
+        print("Checking for overlapped events failed!")
+        displayer.show_error(err)
+    else:
+        if overlapped_events:
+            print("The event can't be updated!")
+            displayer.displayTable("Overlapped Events",
+                                   _VIEW_COLUMN_HEADERS, overlapped_events, _VIEW_COLUMN_SIZES)
+            return
+
+    try:
+        event_dao.update_event(matched_event[0], updated_event)
     except Exception as err:
         print(f"Updating the event record of {old_event_name} failed!")
         displayer.show_error(err)
