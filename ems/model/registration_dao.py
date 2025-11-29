@@ -56,6 +56,16 @@ class RegDao:
             self.cur.execute(view_query, (event_id,))
             return self.cur.fetchall()
 
+    def is_registered(self, sr_code):
+        search_query = """
+            SELECT *
+            FROM registration
+            WHERE sr_code ILIKE %s
+        """
+
+        self.cur.execute(search_query, (sr_code,))
+        return self.cur.fetchone()
+
     def remove_participant(self, event_id, sr_code):
         delete_query = """
             DELETE FROM registration
