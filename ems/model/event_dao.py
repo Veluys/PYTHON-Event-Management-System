@@ -31,6 +31,24 @@ class EventDAO:
             self.conn.rollback()
             raise e
 
+    def view_upcoming(self):
+        view_query = self._get_base_view_query() + """
+            WHERE e.event_date BETWEEN (CURRENT_DATE + INTERVAL '1 day') AND (CURRENT_DATE + INTERVAL '3 days')
+        """
+
+        self.cur.execute(view_query)
+        return self.cur.fetchall()
+
+    def view_events(self):
+        view_query = self._get_base_view_query() + "\nORDER BY e.event_date;"
+        self.cur.execute(view_query)
+        return self.cur.fetchall()
+
+    def display_search(self, event_name):
+        view_query = self._get_base_view_query() + "\nWHERE event_name ILIKE %s"
+        self.cur.execute(view_query, (event_name,))
+        return self.cur.fetchone()
+
     def view_overlapped_events(self, event_id, event):
         view_query = self._get_base_view_query() + """
             WHERE e.event_id != %s
@@ -44,16 +62,6 @@ class EventDAO:
         self.cur.execute(view_query, params)
         result = self.cur.fetchall()
         return result
-
-    def view_events(self):
-        view_query = self._get_base_view_query() + "\nORDER BY e.event_date;"
-        self.cur.execute(view_query)
-        return self.cur.fetchall()
-
-    def display_search(self, event_name):
-        view_query = self._get_base_view_query() + "\nWHERE event_name ILIKE %s"
-        self.cur.execute(view_query, (event_name,))
-        return self.cur.fetchone()
 
     def _get_base_view_query(self):
         return """
