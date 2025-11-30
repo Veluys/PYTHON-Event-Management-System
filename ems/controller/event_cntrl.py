@@ -202,6 +202,13 @@ def _update_event():
     end_time = get_input.getTime("End Time", True)
     updated_event.set_end_time(end_time if end_time else matched_event[4])
 
+    try:
+        if updated_event.get_end_time() < updated_event.get_start_time():
+            raise ValueError("Error! End Time is before Start Time!")
+    except ValueError as err:
+        displayer.show_error(err)
+        return
+
     displayer.display_menu("Venues: ", venues)
     venue_option = get_input.getInt(len(venues), True)
 
