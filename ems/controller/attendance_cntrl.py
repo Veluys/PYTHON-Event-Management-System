@@ -5,8 +5,8 @@ from ems.model.event_dao import event_dao
 from ems.model.attendance_dao import att_dao
 from ems.model.registration_dao import reg_dao
 
-_VIEW_COLUMN_HEADERS = ("Sr-Code", "Program", "Year Level", "Full Name", "Attended")
-_VIEW_COLUMN_SIZES = (0.15, 0.15, 0.10, 0.50, 0.10)
+_VIEW_COLUMN_HEADERS = ["Sr-Code", "Program", "Year Level", "Full Name", "Attended"]
+_VIEW_COLUMN_SIZES = [0.15, 0.15, 0.10, 0.50, 0.10]
 
 def execute():
     displayer.display_header("Attendance Page")
@@ -73,7 +73,14 @@ def _view_attendance(event_id, attended):
             print(f"There are currently no {participant_status}!\n")
             return
         else:
-            displayer.displayTable(participant_status, _VIEW_COLUMN_HEADERS, participants, _VIEW_COLUMN_SIZES)
+            new_column_headers = _VIEW_COLUMN_HEADERS
+            new_column_headers.pop()
+
+            new_column_sizes = _VIEW_COLUMN_SIZES
+            new_column_sizes.pop()
+            new_column_sizes[4] = 0.6
+
+            displayer.displayTable(participant_status, new_column_headers, participants, new_column_sizes)
 
 def _search_registered(event_id):
     displayer.display_subheader("Searching Participants")
