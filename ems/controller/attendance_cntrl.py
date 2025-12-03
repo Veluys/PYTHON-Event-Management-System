@@ -1,11 +1,8 @@
 import ems.view.displayer as displayer
-import ems.controller.input_getter as get_input
-from ems.controller.input_getter import getLine
+from ems.controller.input_getter import getLine, getInt
 from ems.dao.event_dao import EventDAO
-from ems.dao.attendance_dao import AttendDao
-from ems.dao.registration_dao import RegDao
-from ems.model.event import Event
-from ems.model.registration import Registration
+from ems.dao import AttendDao, RegDao
+from ems.model import Event, Registration
 
 class AttendCntrl:
     def __init__(self, conn):
@@ -67,7 +64,7 @@ class AttendCntrl:
                           "Set as Present", "Reset as Absent", "Exit")
 
         displayer.display_menu("Select an operation: ", att_operations)
-        option = get_input.getInt(len(att_operations))
+        option = getInt(len(att_operations))
 
         match option:
             case 1:
@@ -128,7 +125,7 @@ class AttendCntrl:
         else:
             displayer.display_subheader("Marking Participant as Absent")
 
-        sr_code = get_input.getLine("Sr-Code: ")
+        sr_code = getLine("Sr-Code: ")
 
         if self._can_update(sr_code, setPresent):
             regRecord = Registration(self._selected_event_id, sr_code)

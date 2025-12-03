@@ -1,4 +1,4 @@
 from .event import Event
-from .student import Student
+from .registration import Registration
 
-__all__ = ['Event', 'Student']
+__all__ = ['Event', 'Registration']

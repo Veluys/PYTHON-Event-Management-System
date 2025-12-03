@@ -1,12 +1,7 @@
 import ems.view.displayer as displayer
-import ems.controller.input_getter as get_input
-from ems.controller.input_getter import getLine
-from ems.dao.registration_dao import RegDao
-from ems.dao.event_dao import EventDAO
-from ems.dao.student_dao import StudentDao
-from ems.model.event import Event
-from ems.model.registration import Registration
-
+from ems.controller.input_getter import getLine, getInt
+from ems.dao import RegDao, EventDAO, StudentDao
+from ems.model import Event, Registration
 
 class RegCntrl:
     def __init__(self, conn):
@@ -66,7 +61,7 @@ class RegCntrl:
             displayer.display_subheader("Registration Menu")
             displayer.display_menu("Select an operation: ", operations)
 
-            option = get_input.getInt(len(operations))
+            option = getInt(len(operations))
 
             if is_completed or (option >= 2 and option != len(operations)):
                 if self.reg_dao.emptyCheck(self._selected_event_id):

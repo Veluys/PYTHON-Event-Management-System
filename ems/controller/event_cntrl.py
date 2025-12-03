@@ -1,7 +1,6 @@
 import ems.view.displayer as displayer
-import ems.controller.input_getter as get_input
-from ems.dao.event_dao import EventDAO
-from ems.dao.venue_dao import VenueDAO
+from ems.controller.input_getter import getInt, getLine, getTime, getDate
+from ems.dao import EventDAO, VenueDAO
 from ems.model.event import Event
 
 class EventCntrl:
@@ -26,7 +25,7 @@ class EventCntrl:
                                 "Update Events", "Delete Events", "Exit")
 
             displayer.display_menu("Select an operation: ", event_operations)
-            option = get_input.getInt(len(event_operations))
+            option = getInt(len(event_operations))
 
             if option >= 2 and option != 6 and self.event_dao.emptyCheck():
                 print("There are currently no events!\n")
@@ -64,7 +63,7 @@ class EventCntrl:
             displayer.show_error(err)
             return
 
-        event_name = get_input.getLine("Event name: ")
+        event_name = getLine("Event name: ")
 
         try:
             matched_event = self.event_dao.record_search(event_name)
@@ -77,11 +76,11 @@ class EventCntrl:
             print(f"An event with an event name of '{event_name}' already exists in the database!\n")
             return
 
-        event_date = get_input.getDate("Event Date")
-        start_time = get_input.getTime("Start Time")
+        event_date = getDate("Event Date")
+        start_time = getTime("Start Time")
 
         while True:
-            end_time = get_input.getTime("End Time")
+            end_time = getTime("End Time")
             try:
                 if end_time < start_time:
                     raise ValueError("Error! End Time is before Start Time!")
@@ -91,7 +90,7 @@ class EventCntrl:
                 break
 
         displayer.display_menu("Venues: ", venues)
-        venue_option = get_input.getInt(len(venues)) - 1
+        venue_option = getInt(len(venues)) - 1
         try:
             venue_id = self.venue_dao.getVenueID(venues[venue_option])
         except Exception as err:
@@ -139,7 +138,7 @@ class EventCntrl:
 
     def _search_event(self):
         displayer.display_subheader("Search Event")
-        event_name = get_input.getLine("Event name: ")
+        event_name = getLine("Event name: ")
         print()
 
         try:
@@ -171,7 +170,7 @@ class EventCntrl:
 
     def _update_event(self):
         displayer.display_subheader("Updating Event")
-        old_event_name = get_input.getLine("Event name: ")
+        old_event_name = getLine("Event name: ")
 
         try:
             matched_event = self.event_dao.record_search(old_event_name)
@@ -198,7 +197,7 @@ class EventCntrl:
 
         print("Note: Only provide values to the field(s) you want to update. Otherwise simply press enter.")
 
-        new_event_name = get_input.getLine("Event name: ", True)
+        new_event_name = getLine("Event name: ", True)
 
         if new_event_name:
             try:
@@ -214,14 +213,14 @@ class EventCntrl:
             else:
                 upd_event.event_name = new_event_name
 
-        event_date = get_input.getDate("Event Date", True)
+        event_date = getDate("Event Date", True)
         if event_date: upd_event.event_date = event_date
 
-        start_time = get_input.getTime("Start Time", True)
+        start_time = getTime("Start Time", True)
         if start_time: upd_event.start_time = start_time
 
         while True:
-            end_time = get_input.getTime("End Time", True)
+            end_time = getTime("End Time", True)
 
             if end_time:
                 try:
@@ -235,7 +234,7 @@ class EventCntrl:
                 break
 
         displayer.display_menu("Venues: ", venues)
-        venue_option = get_input.getInt(len(venues), True)
+        venue_option = getInt(len(venues), True)
 
         if venue_option != -1:
             try:
@@ -269,7 +268,7 @@ class EventCntrl:
 
     def _delete_event(self):
         displayer.display_subheader("Search Event")
-        event_name = get_input.getLine("Event name: ")
+        event_name = getLine("Event name: ")
         print()
 
         try:

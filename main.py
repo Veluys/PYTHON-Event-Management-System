@@ -1,10 +1,7 @@
 import psycopg2
 
 import ems.view.displayer as displayer
-import ems.controller.input_getter as get_input
-from ems.controller.event_cntrl import EventCntrl
-from ems.controller.registration_cntrl import RegCntrl
-from ems.controller.attendance_cntrl import AttendCntrl
+from ems.controller import *
 
 def get_connection():
     try:
@@ -35,7 +32,7 @@ def main():
         displayer.display_subheader("Main Menu")
         main_menu_options = ("Events", "Registration", "Attendance", "Exit")
         displayer.display_menu("What do you want to do or work with today?", main_menu_options)
-        option = get_input.getInt(len(main_menu_options))
+        option = getInt(len(main_menu_options))
 
         match option:
             case 1:
