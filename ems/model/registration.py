@@ -1,8 +1,8 @@
 from dataclasses import dataclass
+from typing import Optional
 
 @dataclass
 class Registration:
     event_id: int
     sr_code: str
-    venue_id: str
-    attended: str
+    attended: Optional[str] = None
